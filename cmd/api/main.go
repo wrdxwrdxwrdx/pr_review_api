@@ -11,8 +11,13 @@ import (
 func main() {
 	// Инициализация зависимостей
 	userRepository := inmemory.NewUserRepository()
-	userService := services.NewUserService(userRepository) // Предполагая, что у вас есть конструктор
+	teamRepository := inmemory.NewTeamRepository()
+
+	teamService := services.NewTeamService(teamRepository)
+	userService := services.NewUserService(userRepository)
+
 	userHandler := handlers.NewUserHandler(userService)
+	teamHandler := handlers.NewTeamHandler(teamService)
 
 	// Создание роутера Gin
 	router := gin.Default()
@@ -25,6 +30,7 @@ func main() {
 	api := router.Group("/api/v1")
 	{
 		api.POST("/users", userHandler.CreateUser)
+		api.POST("/team/add", teamHandler.CreateTeam)
 		// Добавьте другие маршруты по мере необходимости
 		// api.GET("/users", userHandler.GetUsers)
 		// api.GET("/users/:id", userHandler.GetUserByID)

@@ -12,6 +12,6 @@ func NewUserRepository() interfaces.UserRepository {
 	return &UserRepository{}
 }
 
-func (r UserRepository) Create(ctx context.Context, entity *entities.User) error {
+func (r *UserRepository) Create(ctx context.Context, entity *entities.User) error {
 	return nil
 }
