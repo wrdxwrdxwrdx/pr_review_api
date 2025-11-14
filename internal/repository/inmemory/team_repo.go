@@ -25,3 +25,14 @@ func (r *TeamRepository) Create(ctx context.Context, entity *entities.Team) erro
 	}
 	return nil
 }
+
+func (r *TeamRepository) GetByID(ctx context.Context, teamNameQuery string) (*entities.Team, error) {
+	fmt.Printf("get team '%s'", teamNameQuery)
+	for _, team := range r.teams {
+		if team.TeamName == teamNameQuery {
+			fmt.Printf("found team '%s'", teamNameQuery)
+			return &team, nil
+		}
+	}
+	return nil, fmt.Errorf("no team '%s'", teamNameQuery)
+}

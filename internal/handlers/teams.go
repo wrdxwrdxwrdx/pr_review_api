@@ -22,9 +22,6 @@ func (h *TeamHandler) CreateTeam(c *gin.Context) {
 	ctx := c.Request.Context()
 	var teamJson entities.Team
 
-	// body, _ := c.GetRawData()
-	// fmt.Printf("Raw request body: %s\n", string(body))
-
 	if err := c.ShouldBindJSON(&teamJson); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Invalid JSON data",
@@ -44,4 +41,28 @@ func (h *TeamHandler) CreateTeam(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, team)
+}
+
+func (h *TeamHandler) GetTeam(c *gin.Context) {
+	ctx := c.Request.Context()
+	teamNameQuery := c.Query("TeamNameQuery")
+
+	if teamNameQuery == "" {
+		c.JSON(400, gin.H{
+			"error": "No teamNameQuery",
+		})
+		return
+	}
+
+	team, err := h.TeamService.GetByID(ctx, teamNameQuery)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create user",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, team)
 }

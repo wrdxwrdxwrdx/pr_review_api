@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-	// Инициализация зависимостей
 	userRepository := inmemory.NewUserRepository()
 	teamRepository := inmemory.NewTeamRepository()
 
@@ -19,25 +18,17 @@ func main() {
 	userHandler := handlers.NewUserHandler(userService)
 	teamHandler := handlers.NewTeamHandler(teamService)
 
-	// Создание роутера Gin
 	router := gin.Default()
 
-	// Настройка middleware (опционально)
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 
-	// Настройка маршрутов
 	api := router.Group("/api/v1")
 	{
 		api.POST("/users", userHandler.CreateUser)
 		api.POST("/team/add", teamHandler.CreateTeam)
-		// Добавьте другие маршруты по мере необходимости
-		// api.GET("/users", userHandler.GetUsers)
-		// api.GET("/users/:id", userHandler.GetUserByID)
-		// api.PUT("/users/:id", userHandler.UpdateUser)
-		// api.DELETE("/users/:id", userHandler.DeleteUser)
+		api.GET("/team/get", teamHandler.GetTeam)
 	}
 
-	// Запуск сервера
-	router.Run(":8080") // localhost:8080
+	router.Run(":8080")
 }
