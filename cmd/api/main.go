@@ -33,6 +33,7 @@ func main() {
 		api.POST("/team/add", teamHandler.CreateTeam)
 		api.POST("/pullRequest/create", prHandler.CreatePr)
 		api.POST("/pullRequest/merge", prHandler.MergePr)
+		api.POST("/pullRequest/reassign", prHandler.Reassign)
 		api.GET("/team/get", teamHandler.GetTeam)
 	}
 

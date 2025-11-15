@@ -11,7 +11,5 @@ type PrRepository interface {
 
 	GetByID(ctx context.Context, prId string) (*entities.PullRequest, error)
 	Merge(ctx context.Context, prId string) (*entities.PullRequest, error)
-	// GetByEmail(ctx context.Context, email string) (*entities.User, error)
-	// ExistsByEmail(ctx context.Context, email string) (bool, error)
-	// UpdateEmail(ctx context.Context, id uuid.UUID, email string) error
+	Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) (*entities.PullRequest, error)
 }

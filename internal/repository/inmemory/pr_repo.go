@@ -40,3 +40,14 @@ func (r *PrRepository) Merge(ctx context.Context, prId string) (*entities.PullRe
 	pr.MergedAt = &mergedAt
 	return pr, nil
 }
+
+func (r *PrRepository) Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) (*entities.PullRequest, error) {
+	pr, err := r.GetByID(ctx, pullRequestId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	pr.AssignedReviewers = newAssignedReviewers
+	return pr, nil
+}

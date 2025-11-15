@@ -16,7 +16,8 @@ func NewUserRepository() interfaces.UserRepository {
 	user_one := entities.NewUser("u1", "username", "team", true)
 	user_two := entities.NewUser("u2", "username", "team", true)
 	user_three := entities.NewUser("u3", "username", "team", true)
-	repo.users = []entities.User{*user_one, *user_two, *user_three}
+	user_four := entities.NewUser("u4", "username", "team", true)
+	repo.users = []entities.User{*user_one, *user_two, *user_three, *user_four}
 	return repo
 }
 

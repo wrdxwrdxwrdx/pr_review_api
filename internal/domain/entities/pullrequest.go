@@ -31,6 +31,11 @@ type MergePullRequestJson struct {
 	PullRequestId string `json:"pull_request_id"`
 }
 
+type ReassignPullRequestJson struct {
+	PullRequestId string `json:"pull_request_id"`
+	OldReviewerId string `json:"old_reviewer_id"`
+}
+
 func NewPullRequest(pullRequestId string, pullRequestName string, authoeId string, status Status, assignedReviewers []string, createdAt *time.Time) *PullRequest {
 	return &PullRequest{PullRequestId: pullRequestId,
 		PullRequestName:   pullRequestName,

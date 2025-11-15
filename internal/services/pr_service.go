@@ -41,3 +41,45 @@ func (s *PrService) Create(ctx context.Context, pullRequestId string, pullReques
 func (s *PrService) Merge(ctx context.Context, pullRequestId string) (*entities.PullRequest, error) {
 	return s.PrRepository.Merge(ctx, pullRequestId)
 }
+
+func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldReviewerId string) (*entities.PullRequest, error) {
+	pr, err := s.PrRepository.GetByID(ctx, pullRequestId)
+	if err != nil {
+		return nil, err
+	}
+
+	newAssignedReviewers := pr.AssignedReviewers
+	team, err := s.UserRepository.GetUserTeam(pr.AuthorId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var newReviewer string
+	var reviewerOne, reviewerTwo string
+	if len(newAssignedReviewers) > 0 {
+		reviewerOne = newAssignedReviewers[0]
+	}
+	if len(newAssignedReviewers) > 1 {
+		reviewerTwo = newAssignedReviewers[1]
+	}
+
+	for _, user := range *team {
+		if user != oldReviewerId && user != reviewerOne && user != reviewerTwo {
+			newReviewer = user
+			break
+		}
+	}
+
+	for i, user := range newAssignedReviewers {
+		if user == oldReviewerId {
+			newAssignedReviewers[i] = newReviewer
+			if newReviewer == "" {
+				newAssignedReviewers = append(newAssignedReviewers[:i], newAssignedReviewers[i+1:]...)
+			}
+
+		}
+	}
+
+	return s.PrRepository.Reassign(ctx, pullRequestId, newAssignedReviewers)
+}

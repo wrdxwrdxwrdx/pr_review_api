@@ -67,3 +67,28 @@ func (h *PrHandler) MergePr(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, pr)
 }
+
+func (h *PrHandler) Reassign(c *gin.Context) {
+	ctx := c.Request.Context()
+	var prJson entities.ReassignPullRequestJson
+
+	if err := c.ShouldBindJSON(&prJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid JSON data",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	pr, err := h.PrService.Reassign(ctx, prJson.PullRequestId, prJson.OldReviewerId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create PullRequest",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, pr)
+}
