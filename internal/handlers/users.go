@@ -22,9 +22,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	ctx := c.Request.Context()
 	var userJson entities.UserJson
 
-	// body, _ := c.GetRawData()
-	// fmt.Printf("Raw request body: %s\n", string(body))
-
 	if err := c.ShouldBindJSON(&userJson); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "Invalid JSON data",
@@ -34,6 +31,31 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	user, err := h.userService.Create(ctx, userJson.Username, userJson.TeamName)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create user",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, user)
+}
+
+func (h *UserHandler) SetIsActive(c *gin.Context) {
+	ctx := c.Request.Context()
+	var userJson entities.UserIsActiveJson
+
+	if err := c.ShouldBindJSON(&userJson); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid JSON data",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	user, err := h.userService.SetIsActive(ctx, userJson.UserId, userJson.IsActive)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

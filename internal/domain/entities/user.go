@@ -1,12 +1,10 @@
 package entities
 
-import "github.com/google/uuid"
-
 type User struct {
-	UserId   uuid.UUID `json:"UserId"`
-	Username string    `json:"username"`
-	TeamName string    `json:"team_name"`
-	IsActive bool      `json:"is_active"`
+	UserId   string `json:"user_id"`
+	Username string `json:"username"`
+	TeamName string `json:"team_name"`
+	IsActive bool   `json:"is_active"`
 }
 
 type UserJson struct {
@@ -15,6 +13,11 @@ type UserJson struct {
 	// IsActive bool   `json:"is_active"`
 }
 
-func NewUser(userId uuid.UUID, username string, teamName string, isActive bool) *User {
+type UserIsActiveJson struct {
+	UserId   string `json:"user_id"`
+	IsActive bool   `json:"is_active"`
+}
+
+func NewUser(userId string, username string, teamName string, isActive bool) *User {
 	return &User{UserId: userId, Username: username, TeamName: teamName, IsActive: isActive}
 }

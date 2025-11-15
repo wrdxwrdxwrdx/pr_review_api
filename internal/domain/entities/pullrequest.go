@@ -2,8 +2,6 @@ package entities
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Status string
@@ -14,11 +12,31 @@ const (
 )
 
 type PullRequest struct {
-	Pull_request_id    uuid.UUID  `json:"pull_request_id"`
-	Pull_request_name  string     `json:"pull_request_name"`
-	Author_id          uuid.UUID  `json:"author_id"`
-	Status             Status     `json:"status"`
-	Assigned_reviewers []string   `json:"assigned_reviewers"`
-	CreatedAt          *time.Time `json:"createdAt"`
-	MergedAt           *time.Time `json:"mergedAt"`
+	PullRequestId     string     `json:"pull_request_id"`
+	PullRequestName   string     `json:"pull_request_name"`
+	AuthorId          string     `json:"author_id"`
+	Status            Status     `json:"status"`
+	AssignedReviewers []string   `json:"assigned_reviewers"`
+	CreatedAt         *time.Time `json:"createdAt"`
+	MergedAt          *time.Time `json:"mergedAt"`
+}
+
+type PullRequestJson struct {
+	PullRequestId   string `json:"pull_request_id"`
+	PullRequestName string `json:"pull_request_name"`
+	AuthorId        string `json:"author_id"`
+}
+
+type MergePullRequestJson struct {
+	PullRequestId string `json:"pull_request_id"`
+}
+
+func NewPullRequest(pullRequestId string, pullRequestName string, authoeId string, status Status, assignedReviewers []string, createdAt *time.Time) *PullRequest {
+	return &PullRequest{PullRequestId: pullRequestId,
+		PullRequestName:   pullRequestName,
+		AuthorId:          authoeId,
+		Status:            status,
+		AssignedReviewers: assignedReviewers,
+		CreatedAt:         createdAt,
+	}
 }

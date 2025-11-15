@@ -11,12 +11,15 @@ import (
 func main() {
 	userRepository := inmemory.NewUserRepository()
 	teamRepository := inmemory.NewTeamRepository()
+	prRepository := inmemory.NewPrRepository()
 
 	teamService := services.NewTeamService(teamRepository)
 	userService := services.NewUserService(userRepository)
+	prService := services.NewPrService(prRepository, userRepository)
 
 	userHandler := handlers.NewUserHandler(userService)
 	teamHandler := handlers.NewTeamHandler(teamService)
+	prHandler := handlers.NewPrHandler(prService)
 
 	router := gin.Default()
 
@@ -26,7 +29,10 @@ func main() {
 	api := router.Group("/api/v1")
 	{
 		api.POST("/users", userHandler.CreateUser)
+		api.POST("/users/setIsActive", userHandler.SetIsActive)
 		api.POST("/team/add", teamHandler.CreateTeam)
+		api.POST("/pullRequest/create", prHandler.CreatePr)
+		api.POST("/pullRequest/merge", prHandler.MergePr)
 		api.GET("/team/get", teamHandler.GetTeam)
 	}
 

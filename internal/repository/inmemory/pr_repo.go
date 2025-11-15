@@ -1,1 +1,42 @@
 package inmemory
+
+import (
+	"context"
+	"fmt"
+	"pr_review_api/internal/domain/entities"
+	"pr_review_api/internal/repository/interfaces"
+	"time"
+)
+
+type PrRepository struct {
+	prs map[string]*entities.PullRequest
+}
+
+func NewPrRepository() interfaces.PrRepository {
+	return &PrRepository{
+		prs: make(map[string]*entities.PullRequest),
+	}
+}
+
+func (r *PrRepository) Create(ctx context.Context, entity *entities.PullRequest) error {
+	fmt.Println("Create Pr inmemory")
+	r.prs[entity.PullRequestId] = entity
+	return nil
+}
+
+func (r *PrRepository) GetByID(ctx context.Context, prId string) (*entities.PullRequest, error) {
+	fmt.Println("Get Pr inmemory")
+	return r.prs[prId], nil
+}
+
+func (r *PrRepository) Merge(ctx context.Context, prId string) (*entities.PullRequest, error) {
+	pr, err := r.GetByID(ctx, prId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	mergedAt := time.Now()
+	pr.MergedAt = &mergedAt
+	return pr, nil
+}

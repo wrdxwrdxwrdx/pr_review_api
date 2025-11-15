@@ -21,6 +21,6 @@ func (s *TeamService) Create(ctx context.Context, teamName string, members []ent
 }
 
 func (s *TeamService) GetByID(ctx context.Context, teamNameQuery string) (*entities.Team, error) {
-	team, err := s.teamRepository.GetByID(ctx, teamNameQuery)
+	team, err := s.teamRepository.GetByName(ctx, teamNameQuery)
 	return team, err
 }
