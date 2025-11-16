@@ -2,6 +2,8 @@
 
 A REST API service for managing pull request reviews, teams, and users. Built with Go, Gin framework, and PostgreSQL.
 
+**Ридми на русском хранится в отдельном файле =)**
+
 ## Prerequisites
 
 - Docker and Docker Compose
