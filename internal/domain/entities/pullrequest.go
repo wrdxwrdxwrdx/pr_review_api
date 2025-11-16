@@ -34,6 +34,15 @@ type PullRequestJson struct {
 	AuthorId        string `json:"author_id"`
 }
 
+type PullRequestStatistics struct {
+	Stats []*UserPr `json:"stats"`
+}
+
+type UserPr struct {
+	UserId   string `json:"user_id"`
+	PrNumber int    `json:"pull_request_number"`
+}
+
 type MergePullRequestJson struct {
 	PullRequestId string `json:"pull_request_id"`
 }
@@ -69,4 +78,12 @@ func NewPullRequestShortFromPr(pullRequest PullRequest) *PullRequestShort {
 		AuthorId:        pullRequest.AuthorId,
 		Status:          pullRequest.Status,
 	}
+}
+
+func NewUserPr(userId string, prNumber int) *UserPr {
+	return &UserPr{UserId: userId, PrNumber: prNumber}
+}
+
+func NewPullRequestStatistics(stats []*UserPr) *PullRequestStatistics {
+	return &PullRequestStatistics{Stats: stats}
 }

@@ -133,3 +133,19 @@ func (h *PrHandler) Reassign(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, pr)
 }
+
+func (h *PrHandler) Statistics(c *gin.Context) {
+	ctx := c.Request.Context()
+
+	stats, err := h.PrService.Statistics(ctx)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to get Statistics",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, stats)
+}

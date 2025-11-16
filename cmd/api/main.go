@@ -84,6 +84,7 @@ func main() {
 		adminOnly.POST("/pullRequest/create", prHandler.CreatePr)
 		adminOnly.POST("/pullRequest/merge", prHandler.MergePr)
 		adminOnly.POST("/pullRequest/reassign", prHandler.Reassign)
+		adminOnly.GET("/pullRequest/statistics", prHandler.Statistics)
 	}
 
 	protected := router.Group("/api/v1")

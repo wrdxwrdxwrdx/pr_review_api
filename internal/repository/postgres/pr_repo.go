@@ -50,6 +50,37 @@ func (r *PrRepository) GetByID(ctx context.Context, prId string) (*entities.Pull
 	return &pr, nil
 }
 
+func (r *PrRepository) GetAll(ctx context.Context) ([]*entities.PullRequest, error) {
+	rows, err := r.db.Query(ctx, `
+        SELECT pull_request_id, pull_request_name, author_id, status, 
+               assigned_reviewers, created_at, merged_at
+        FROM pull_requests 
+    `)
+	if err != nil {
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "failed to query pull requests")
+	}
+	defer rows.Close()
+
+	var prs []*entities.PullRequest
+	for rows.Next() {
+		var pr entities.PullRequest
+		err := rows.Scan(
+			&pr.PullRequestId, &pr.PullRequestName, &pr.AuthorId, &pr.Status,
+			&pr.AssignedReviewers, &pr.CreatedAt, &pr.MergedAt,
+		)
+		if err != nil {
+			return nil, customerrors.NewDomainError(customerrors.NotFound, "failed to scan pull request")
+		}
+		prs = append(prs, &pr)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "error during rows iteration")
+	}
+
+	return prs, nil
+}
+
 func (r *PrRepository) Merge(ctx context.Context, prId string) (*entities.PullRequest, error) {
 	pr, err := r.GetByID(ctx, prId)
 

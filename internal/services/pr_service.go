@@ -113,3 +113,25 @@ func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldRevie
 	pr, _ = s.PrRepository.GetByID(ctx, pullRequestId)
 	return pr, err
 }
+
+func (s *PrService) Statistics(ctx context.Context) (*entities.PullRequestStatistics, error) {
+	prs, err := s.PrRepository.GetAll(ctx)
+
+	if err != nil {
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "PR not found")
+	}
+
+	counter := make(map[string]int)
+
+	for _, pr := range prs {
+		counter[pr.AuthorId]++
+	}
+
+	var stats []*entities.UserPr
+
+	for user, num := range counter {
+		stats = append(stats, entities.NewUserPr(user, num))
+	}
+
+	return entities.NewPullRequestStatistics(stats), err
+}
