@@ -67,3 +67,12 @@ func GetUserFromContext(c *gin.Context) (*auth.Claims, bool) {
 	claims, ok := user.(*auth.Claims)
 	return claims, ok
 }
+
+func (m *AuthMiddleware) AuthenticateHandler() gin.HandlerFunc {
+	return m.Authenticate()
+}
+
+func IsAdmin(c *gin.Context) bool {
+	isAdmin, exists := c.Get("is_admin")
+	return exists && isAdmin.(bool)
+}

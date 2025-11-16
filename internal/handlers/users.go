@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"pr_review_api/internal/domain/entities"
 	customerrors "pr_review_api/internal/domain/errors"
+	"pr_review_api/internal/middleware"
 	"pr_review_api/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -58,6 +59,16 @@ func (h *UserHandler) SetIsActive(c *gin.Context) {
 func (h *UserHandler) GetReview(c *gin.Context) {
 	ctx := c.Request.Context()
 	userIdQuery := c.Query("UserIdQuery")
+
+	if !middleware.IsAdmin(c) {
+		claims, exists := middleware.GetUserFromContext(c)
+		if !exists || claims.UserID != userIdQuery {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "can only view your own reviews",
+			})
+			return
+		}
+	}
 
 	if userIdQuery == "" {
 		c.JSON(400, gin.H{

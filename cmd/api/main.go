@@ -65,6 +65,7 @@ func main() {
 	prHandler := handlers.NewPrHandler(prService)
 
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
+	adminMiddleware := middleware.NewAdminMiddleware(cfg.Admin.Token)
 
 	router := gin.Default()
 
@@ -75,26 +76,30 @@ func main() {
 		// public.GET("/health", healthHandler.HealthCheck)
 	}
 
-	router.Use(gin.Logger())
-	router.Use(gin.Recovery())
+	adminOnly := router.Group("/api/v1")
+	adminOnly.Use(adminMiddleware.AdminOnly())
+	{
+		adminOnly.POST("/users/setIsActive", userHandler.SetIsActive)
+		adminOnly.POST("/pullRequest/create", prHandler.CreatePr)
+		adminOnly.POST("/pullRequest/merge", prHandler.MergePr)
+		adminOnly.POST("/pullRequest/reassign", prHandler.Reassign)
+	}
 
 	protected := router.Group("/api/v1")
-	protected.Use(authMiddleware.Authenticate())
+	protected.Use(adminMiddleware.AdminOrUser(authMiddleware))
 	{
-		// User routes
-		protected.POST("/users/setIsActive", userHandler.SetIsActive)
-		protected.GET("/users/getReview", userHandler.GetReview)
-		protected.GET("/auth/me", authHandler.Me)
-
-		// Team routes
-		protected.POST("/team/add", teamHandler.CreateTeam)
 		protected.GET("/team/get", teamHandler.GetTeam)
-
-		// PR routes
-		protected.POST("/pullRequest/create", prHandler.CreatePr)
-		protected.POST("/pullRequest/merge", prHandler.MergePr)
-		protected.POST("/pullRequest/reassign", prHandler.Reassign)
+		protected.GET("/users/getReview", userHandler.GetReview)
 	}
+
+	teamCreate := router.Group("/api/v1")
+	teamCreate.Use(authMiddleware.Authenticate())
+	{
+		teamCreate.POST("/team/add", teamHandler.CreateTeam)
+	}
+
+	router.Use(gin.Logger())
+	router.Use(gin.Recovery())
 
 	addr := ":" + cfg.ServerPort
 	router.Run(addr)

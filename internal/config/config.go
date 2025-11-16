@@ -21,6 +21,9 @@ type Config struct {
 		ExpiresIn time.Duration
 		Issuer    string
 	}
+	Admin struct {
+		Token string
+	}
 }
 
 func Load() *Config {
@@ -39,6 +42,8 @@ func Load() *Config {
 	expiresIn, _ := strconv.Atoi(GetEnv("JWT_EXPIRES_IN", "24"))
 	cfg.JWT.ExpiresIn = time.Duration(expiresIn) * time.Hour
 	cfg.JWT.Issuer = GetEnv("JWT_ISSUER", "pr-reviewer-service")
+
+	cfg.Admin.Token = GetEnv("ADMIN_TOKEN", "admin-secret-token-change-in-production")
 	return &cfg
 }
 
