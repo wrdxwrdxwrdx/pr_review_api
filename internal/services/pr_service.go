@@ -18,16 +18,24 @@ func NewPrService(prRepository interfaces.PrRepository, userRepository interface
 
 func (s *PrService) Create(ctx context.Context, pullRequestId string, pullRequestName string, authorId string) (*entities.PullRequest, error) {
 	status := entities.StatusOpen
-	teamMembers, err := s.UserRepository.GetUserTeam(authorId)
+	author, err := s.UserRepository.GetById(ctx, authorId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	teamMembers, err := s.UserRepository.GetUserTeam(ctx, author.TeamName)
 
 	if err != nil {
 		return nil, err
 	}
 
 	var assignedReviewers []string
-	for i := 0; i < 2; i++ {
-		if i < len(*teamMembers) {
-			assignedReviewers = append(assignedReviewers, (*teamMembers)[i])
+	i := 0
+	for _, userId := range teamMembers {
+		if i < 2 && userId != authorId {
+			i += 1
+			assignedReviewers = append(assignedReviewers, (teamMembers)[i])
 		}
 	}
 
@@ -48,8 +56,13 @@ func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldRevie
 		return nil, err
 	}
 
+	author, err := s.UserRepository.GetById(ctx, pr.AuthorId)
+	if err != nil {
+		return nil, err
+	}
+
 	newAssignedReviewers := pr.AssignedReviewers
-	team, err := s.UserRepository.GetUserTeam(pr.AuthorId)
+	team, err := s.UserRepository.GetUserTeam(ctx, author.TeamName)
 
 	if err != nil {
 		return nil, err
@@ -64,8 +77,8 @@ func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldRevie
 		reviewerTwo = newAssignedReviewers[1]
 	}
 
-	for _, user := range *team {
-		if user != oldReviewerId && user != reviewerOne && user != reviewerTwo {
+	for _, user := range team {
+		if user != oldReviewerId && user != reviewerOne && user != reviewerTwo && user != pr.AuthorId {
 			newReviewer = user
 			break
 		}
@@ -81,5 +94,7 @@ func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldRevie
 		}
 	}
 
-	return s.PrRepository.Reassign(ctx, pullRequestId, newAssignedReviewers)
+	err = s.PrRepository.Reassign(ctx, pullRequestId, newAssignedReviewers)
+	pr, _ = s.PrRepository.GetByID(ctx, pullRequestId)
+	return pr, err
 }

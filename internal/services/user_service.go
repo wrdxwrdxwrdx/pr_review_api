@@ -22,7 +22,7 @@ func (s *UserService) Create(ctx context.Context, username string, teamName stri
 }
 
 func (s *UserService) SetIsActive(ctx context.Context, userId string, isActive bool) (*entities.User, error) {
-	user, err := s.userRepository.SetIsActive(userId, isActive)
+	user, err := s.userRepository.SetIsActive(ctx, userId, isActive)
 	return user, err
 }
 

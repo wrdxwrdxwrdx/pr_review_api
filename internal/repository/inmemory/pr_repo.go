@@ -45,23 +45,24 @@ func (r *PrRepository) Merge(ctx context.Context, prId string) (*entities.PullRe
 	return pr, nil
 }
 
-func (r *PrRepository) Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) (*entities.PullRequest, error) {
+func (r *PrRepository) Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) error {
 	pr, err := r.GetByID(ctx, pullRequestId)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	pr.AssignedReviewers = newAssignedReviewers
-	return pr, nil
+	return nil
 }
 
-func (r *PrRepository) GetReview(ctx context.Context, authorId string) ([]*entities.PullRequest, error) {
-	var reviewPrs []*entities.PullRequest
+func (r *PrRepository) GetReview(ctx context.Context, authorId string) ([]*entities.PullRequestShort, error) {
+	var reviewPrs []*entities.PullRequestShort
 
 	for _, pr := range r.prs {
 		if pr.AuthorId == authorId && pr.Status == entities.StatusOpen {
-			reviewPrs = append(reviewPrs, pr)
+			pullRequestShort := entities.NewPullRequestShortFromPr(*pr)
+			reviewPrs = append(reviewPrs, pullRequestShort)
 		}
 	}
 

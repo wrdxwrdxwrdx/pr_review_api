@@ -1,17 +1,52 @@
 package main
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"pr_review_api/internal/config"
 	"pr_review_api/internal/handlers"
-	"pr_review_api/internal/repository/inmemory"
+	"pr_review_api/internal/repository/postgres"
 	"pr_review_api/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	userRepository := inmemory.NewUserRepository()
-	teamRepository := inmemory.NewTeamRepository()
-	prRepository := inmemory.NewPrRepository()
+	// Загрузка конфигурации
+	cfg := config.Load()
+
+	// Инициализация БД
+	db := postgres.NewDB()
+
+	// Формируем connection string
+	connString := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		cfg.DBUser,
+		cfg.DBPassword,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBName,
+		cfg.SSLMode,
+	)
+
+	// Подключаемся к БД
+	err := db.Connect(connString)
+	if err != nil {
+		log.Fatalf("Failed to connect to database: %v", err)
+	}
+	defer db.Close()
+
+	// Инициализация схемы БД
+	ctx := context.Background()
+	err = db.InitSchema(ctx)
+	if err != nil {
+		log.Fatalf("Failed to initialize database schema: %v", err)
+	}
+
+	userRepository := postgres.NewUserRepository(db.Pool)
+	teamRepository := postgres.NewTeamRepository(db.Pool)
+	prRepository := postgres.NewPRRepository(db.Pool)
 
 	teamService := services.NewTeamService(teamRepository)
 	userService := services.NewUserService(userRepository, prRepository)

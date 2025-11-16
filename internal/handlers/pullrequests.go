@@ -30,7 +30,7 @@ func (h *PrHandler) CreatePr(c *gin.Context) {
 		return
 	}
 
-	pr, err := h.PrService.Create(ctx, prJson.PullRequestId, prJson.PullRequestId, prJson.AuthorId)
+	pr, err := h.PrService.Create(ctx, prJson.PullRequestId, prJson.PullRequestName, prJson.AuthorId)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

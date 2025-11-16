@@ -18,11 +18,11 @@ type UserIsActiveJson struct {
 }
 
 type Reviews struct {
-	UserId       string         `json:"user_id"`
-	PullRequests []*PullRequest `json:"pull_requests"`
+	UserId       string              `json:"user_id"`
+	PullRequests []*PullRequestShort `json:"pull_requests"`
 }
 
-func NewReviews(userId string, pullRequests []*PullRequest) *Reviews {
+func NewReviews(userId string, pullRequests []*PullRequestShort) *Reviews {
 	return &Reviews{UserId: userId, PullRequests: pullRequests}
 }
 

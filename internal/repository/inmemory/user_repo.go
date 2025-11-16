@@ -26,14 +26,14 @@ func (r *UserRepository) Create(ctx context.Context, entity *entities.User) erro
 	return nil
 }
 
-func (r *UserRepository) SetIsActive(userId string, isActive bool) (*entities.User, error) {
-	user, err := r.GetById(userId)
+func (r *UserRepository) SetIsActive(ctx context.Context, userId string, isActive bool) (*entities.User, error) {
+	user, err := r.GetById(ctx, userId)
 	user.IsActive = isActive
 
 	return user, err
 }
 
-func (r *UserRepository) GetById(userId string) (*entities.User, error) {
+func (r *UserRepository) GetById(ctx context.Context, userId string) (*entities.User, error) {
 	for i := range r.users {
 		if r.users[i].UserId == userId {
 			return &r.users[i], nil
@@ -43,18 +43,13 @@ func (r *UserRepository) GetById(userId string) (*entities.User, error) {
 	return nil, fmt.Errorf("no user with Id '%s'", userId)
 }
 
-func (r *UserRepository) GetUserTeam(userId string) (*[]string, error) {
-	user, err := r.GetById(userId)
-	if err != nil {
-		return nil, err
-	}
-
+func (r *UserRepository) GetUserTeam(ctx context.Context, teamName string) ([]string, error) {
 	var teamMembers []string
 	for i := range r.users {
-		if r.users[i].TeamName == user.TeamName && r.users[i].IsActive && r.users[i].UserId != userId {
+		if r.users[i].TeamName == teamName && r.users[i].IsActive {
 			teamMembers = append(teamMembers, r.users[i].UserId)
 		}
 	}
 
-	return &teamMembers, err
+	return teamMembers, nil
 }

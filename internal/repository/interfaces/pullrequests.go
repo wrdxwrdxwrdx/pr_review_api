@@ -11,6 +11,6 @@ type PrRepository interface {
 
 	GetByID(ctx context.Context, prId string) (*entities.PullRequest, error)
 	Merge(ctx context.Context, prId string) (*entities.PullRequest, error)
-	Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) (*entities.PullRequest, error)
-	GetReview(ctx context.Context, authorId string) ([]*entities.PullRequest, error)
+	Reassign(ctx context.Context, pullRequestId string, newAssignedReviewers []string) error
+	GetReview(ctx context.Context, authorId string) ([]*entities.PullRequestShort, error)
 }
