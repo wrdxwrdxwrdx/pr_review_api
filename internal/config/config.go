@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"time"
 )
 
 type Config struct {
@@ -15,10 +16,15 @@ type Config struct {
 	ServerPort string
 	AdminToken string
 	UserToken  string
+	JWT        struct {
+		SecretKey string
+		ExpiresIn time.Duration
+		Issuer    string
+	}
 }
 
 func Load() *Config {
-	return &Config{
+	cfg := Config{
 		DBHost:     GetEnv("DB_HOST", "localhost"),
 		DBPort:     GetEnv("DB_PORT", "5432"),
 		DBUser:     GetEnv("DB_USER", "postgres"),
@@ -29,6 +35,11 @@ func Load() *Config {
 		AdminToken: GetEnv("ADMIN_TOKEN", "admin-secret-token"),
 		UserToken:  GetEnv("USER_TOKEN", "user-secret-token"),
 	}
+	cfg.JWT.SecretKey = GetEnv("JWT_SECRET_KEY", "your-secret-key-change-in-production")
+	expiresIn, _ := strconv.Atoi(GetEnv("JWT_EXPIRES_IN", "24"))
+	cfg.JWT.ExpiresIn = time.Duration(expiresIn) * time.Hour
+	cfg.JWT.Issuer = GetEnv("JWT_ISSUER", "pr-reviewer-service")
+	return &cfg
 }
 
 func GetEnv(key, defaultValue string) string {

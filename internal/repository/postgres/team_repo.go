@@ -10,21 +10,16 @@ import (
 )
 
 type TeamRepository struct {
-	db *pgxpool.Pool
+	db             *pgxpool.Pool
+	userRepository UserRepository
 }
 
-func NewTeamRepository(db *pgxpool.Pool) *TeamRepository {
-	return &TeamRepository{db: db}
+func NewTeamRepository(db *pgxpool.Pool, userRepository UserRepository) *TeamRepository {
+	return &TeamRepository{db: db, userRepository: userRepository}
 }
 
 func (r *TeamRepository) Create(ctx context.Context, entity *entities.Team) error {
-	tx, err := r.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-
-	_, err = tx.Exec(ctx, "INSERT INTO teams (team_name) VALUES ($1)", entity.TeamName)
+	_, err := r.db.Exec(ctx, "INSERT INTO teams (team_name) VALUES ($1)", entity.TeamName)
 	if err != nil {
 		if utils.IsUnique(err) {
 			return customerrors.NewDomainError(customerrors.TeamExists, "team already exists")
@@ -33,18 +28,14 @@ func (r *TeamRepository) Create(ctx context.Context, entity *entities.Team) erro
 	}
 
 	for _, member := range entity.Members {
-		_, err = tx.Exec(ctx, `
-            INSERT INTO users (user_id, username, team_name, is_active) 
-            VALUES ($1, $2, $3, $4)
-            ON CONFLICT (user_id) 
-            DO UPDATE SET username = $2, team_name = $3, is_active = $4
-        `, member.UserId, member.Username, entity.TeamName, member.IsActive)
+		user := entities.NewUser(member.UserId, member.Username, entity.TeamName, member.IsActive)
+		err := r.userRepository.Create(ctx, user)
 		if err != nil {
 			return err
 		}
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
 
 func (r *TeamRepository) GetByName(ctx context.Context, teamNameQuery string) (*entities.Team, error) {

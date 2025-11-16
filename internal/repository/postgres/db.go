@@ -54,6 +54,11 @@ func (db *DB) InitSchema(ctx context.Context) error {
             created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         )`,
 
+		`INSERT INTO teams (team_name) 
+        VALUES ('EMPTYTEAM')
+        ON CONFLICT (team_name) 
+        DO NOTHING`,
+
 		`CREATE TABLE IF NOT EXISTS users (
             user_id VARCHAR(255) PRIMARY KEY,
             username VARCHAR(255) NOT NULL,

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"fmt"
 	"pr_review_api/internal/domain/entities"
 	customerrors "pr_review_api/internal/domain/errors"
 
@@ -17,13 +18,21 @@ func NewUserRepository(db *pgxpool.Pool) *UserRepository {
 }
 
 func (r *UserRepository) Create(ctx context.Context, entity *entities.User) error {
+	fmt.Println("Creating entity:", entity)
+
 	_, err := r.db.Exec(ctx, `
         INSERT INTO users (user_id, username, team_name, is_active) 
         VALUES ($1, $2, $3, $4)
         ON CONFLICT (user_id) 
-        DO UPDATE SET username = $2, team_name = $3, is_active = $4
+		DO UPDATE SET username = $2, team_name = $3, is_active = $4
     `, entity.UserId, entity.Username, entity.TeamName, entity.IsActive)
-	return err
+
+	if err != nil {
+		fmt.Println("Insert error:", err)
+		return err
+	}
+
+	return nil
 }
 
 func (r *UserRepository) SetIsActive(ctx context.Context, userId string, isActive bool) (*entities.User, error) {
