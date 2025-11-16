@@ -63,6 +63,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(userService)
 	teamHandler := handlers.NewTeamHandler(teamService)
 	prHandler := handlers.NewPrHandler(prService)
+	healthHandler := handlers.NewHealtHandler()
 
 	authMiddleware := middleware.NewAuthMiddleware(jwtManager)
 	adminMiddleware := middleware.NewAdminMiddleware(cfg.Admin.Token)
@@ -73,7 +74,7 @@ func main() {
 	{
 		public.POST("/auth/register", authHandler.Register)
 		public.POST("/auth/login", authHandler.Login)
-		// public.GET("/health", healthHandler.HealthCheck)
+		public.GET("/health", healthHandler.Health)
 	}
 
 	adminOnly := router.Group("/api/v1")
@@ -90,6 +91,7 @@ func main() {
 	{
 		protected.GET("/team/get", teamHandler.GetTeam)
 		protected.GET("/users/getReview", userHandler.GetReview)
+		protected.GET("/auth/me", authHandler.Me)
 	}
 
 	teamCreate := router.Group("/api/v1")
