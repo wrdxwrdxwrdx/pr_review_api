@@ -3,7 +3,9 @@ package services
 import (
 	"context"
 	"pr_review_api/internal/domain/entities"
+	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/repository/interfaces"
+	"slices"
 	"time"
 )
 
@@ -42,8 +44,8 @@ func (s *PrService) Create(ctx context.Context, pullRequestId string, pullReques
 	createdAt := time.Now()
 
 	pr := entities.NewPullRequest(pullRequestId, pullRequestName, authorId, status, assignedReviewers, &createdAt)
-	s.PrRepository.Create(ctx, pr)
-	return pr, nil
+	err = s.PrRepository.Create(ctx, pr)
+	return pr, err
 }
 
 func (s *PrService) Merge(ctx context.Context, pullRequestId string) (*entities.PullRequest, error) {
@@ -52,13 +54,23 @@ func (s *PrService) Merge(ctx context.Context, pullRequestId string) (*entities.
 
 func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldReviewerId string) (*entities.PullRequest, error) {
 	pr, err := s.PrRepository.GetByID(ctx, pullRequestId)
+
+	if err != nil {
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "PR not found")
+	}
+
+	if pr.Status == entities.StatusMerged {
+		return nil, customerrors.NewDomainError(customerrors.PRMerged, "cannot reassign on merged PR")
+	}
+	author, err := s.UserRepository.GetById(ctx, pr.AuthorId)
 	if err != nil {
 		return nil, err
 	}
 
-	author, err := s.UserRepository.GetById(ctx, pr.AuthorId)
-	if err != nil {
-		return nil, err
+	assigned := slices.Contains(pr.AssignedReviewers, oldReviewerId)
+
+	if !assigned {
+		return nil, customerrors.NewDomainError(customerrors.NotAssigned, "reviewer is not assigned to this PR")
 	}
 
 	newAssignedReviewers := pr.AssignedReviewers
@@ -92,6 +104,10 @@ func (s *PrService) Reassign(ctx context.Context, pullRequestId string, oldRevie
 			}
 
 		}
+	}
+
+	if len(newAssignedReviewers) == 0 {
+		return nil, customerrors.NewDomainError(customerrors.NoCandidate, "no active replacement candidate in team")
 	}
 
 	err = s.PrRepository.Reassign(ctx, pullRequestId, newAssignedReviewers)

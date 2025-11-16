@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"pr_review_api/internal/domain/entities"
-	"pr_review_api/internal/domain/errors"
+	customerrors "pr_review_api/internal/domain/errors"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -37,7 +37,7 @@ func (r *UserRepository) SetIsActive(ctx context.Context, userId string, isActiv
 		&user.UserId, &user.Username, &user.TeamName, &user.IsActive,
 	)
 	if err != nil {
-		return nil, errors.NewDomainError(errors.NotFound, "user not found")
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "user not found")
 	}
 	return &user, nil
 }
@@ -51,7 +51,7 @@ func (r *UserRepository) GetById(ctx context.Context, userId string) (*entities.
 		&user.UserId, &user.Username, &user.TeamName, &user.IsActive,
 	)
 	if err != nil {
-		return nil, errors.NewDomainError(errors.NotFound, "user not found")
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "user not found")
 	}
 	return &user, nil
 }

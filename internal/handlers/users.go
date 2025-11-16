@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"pr_review_api/internal/domain/entities"
+	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -33,14 +35,24 @@ func (h *UserHandler) SetIsActive(c *gin.Context) {
 	user, err := h.userService.SetIsActive(ctx, userJson.UserId, userJson.IsActive)
 
 	if err != nil {
+		var domainErr *customerrors.DomainError
+		if errors.As(err, &domainErr) {
+			switch domainErr.Code {
+			case customerrors.NotFound:
+				c.JSON(http.StatusNotFound, gin.H{
+					"error": domainErr.Message,
+				})
+				return
+			}
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Failed to create user",
+			"error":   "Failed to find user",
 			"details": err.Error(),
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, user)
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *UserHandler) GetReview(c *gin.Context) {

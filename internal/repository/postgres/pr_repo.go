@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"pr_review_api/internal/domain/entities"
-	"pr_review_api/internal/domain/errors"
+	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -26,7 +26,7 @@ func (r *PrRepository) Create(ctx context.Context, entity *entities.PullRequest)
 
 	if err != nil {
 		if utils.IsUnique(err) {
-			return errors.NewDomainError(errors.PRExists, "PR already exists")
+			return customerrors.NewDomainError(customerrors.PRExists, "PR already exists")
 		}
 		return err
 	}
@@ -45,7 +45,7 @@ func (r *PrRepository) GetByID(ctx context.Context, prId string) (*entities.Pull
 		&pr.AssignedReviewers, &pr.CreatedAt, &pr.MergedAt,
 	)
 	if err != nil {
-		return nil, errors.NewDomainError(errors.NotFound, "PR not found")
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "PR not found")
 	}
 	return &pr, nil
 }
@@ -74,7 +74,7 @@ func (r *PrRepository) Merge(ctx context.Context, prId string) (*entities.PullRe
 		&newPr.AssignedReviewers, &newPr.CreatedAt, &newPr.MergedAt,
 	)
 	if err != nil {
-		return nil, errors.NewDomainError(errors.NotFound, "PR not found")
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "PR not found")
 	}
 	return &newPr, nil
 }

@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"pr_review_api/internal/domain/entities"
-	"pr_review_api/internal/domain/errors"
+	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -27,7 +27,7 @@ func (r *TeamRepository) Create(ctx context.Context, entity *entities.Team) erro
 	_, err = tx.Exec(ctx, "INSERT INTO teams (team_name) VALUES ($1)", entity.TeamName)
 	if err != nil {
 		if utils.IsUnique(err) {
-			return errors.NewDomainError(errors.TeamExists, "team already exists")
+			return customerrors.NewDomainError(customerrors.TeamExists, "team already exists")
 		}
 		return err
 	}
@@ -72,7 +72,7 @@ func (r *TeamRepository) GetByName(ctx context.Context, teamNameQuery string) (*
 	}
 
 	if len(team.Members) == 0 {
-		return nil, errors.NewDomainError(errors.NotFound, "team not found")
+		return nil, customerrors.NewDomainError(customerrors.NotFound, "team not found")
 	}
 
 	return &team, nil

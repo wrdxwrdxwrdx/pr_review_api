@@ -16,8 +16,8 @@ func NewTeamService(repository interfaces.TeamRepository) TeamService {
 
 func (s *TeamService) Create(ctx context.Context, teamName string, members []entities.TeamMember) (*entities.Team, error) {
 	team := entities.NewTeam(teamName, members)
-	s.teamRepository.Create(ctx, team)
-	return team, nil
+	err := s.teamRepository.Create(ctx, team)
+	return team, err
 }
 
 func (s *TeamService) GetByID(ctx context.Context, teamNameQuery string) (*entities.Team, error) {
