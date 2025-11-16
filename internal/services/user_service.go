@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"pr_review_api/internal/domain/entities"
 	"pr_review_api/internal/repository/interfaces"
 )
@@ -18,7 +17,6 @@ func NewUserService(userRepository interfaces.UserRepository, prRepository inter
 
 func (s *UserService) Create(ctx context.Context, userId string, username string, teamName string, isActive bool) (*entities.User, error) {
 	user := entities.NewUser(userId, username, teamName, isActive)
-	fmt.Println(user)
 	s.userRepository.Create(ctx, user)
 	return user, nil
 }
@@ -45,7 +43,6 @@ func (s *UserService) GetById(ctx context.Context, userId string) (*entities.Use
 
 func (s *UserService) Exist(ctx context.Context, userId string) (bool, error) {
 	user, _ := s.userRepository.GetById(ctx, userId)
-	fmt.Println(user)
 	if user != nil {
 		return true, nil
 	}

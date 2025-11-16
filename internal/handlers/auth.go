@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/middleware"
@@ -42,7 +41,6 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(1)
 	exists, err := h.userService.Exist(ctx, req.UserID)
 	if exists {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -50,14 +48,12 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(2)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-	fmt.Println(3)
 
 	user, err := h.userService.Create(ctx, req.UserID, req.Username, "EMPTYTEAM", true)
 	if err != nil {
@@ -66,7 +62,6 @@ func (h *AuthHandler) Register(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(4)
 
 	token, err := h.jwtManager.GenerateToken(user.UserId, user.Username)
 	if err != nil {
@@ -148,8 +143,6 @@ func (h *AuthHandler) Me(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(claims)
-	fmt.Println(claims.UserID)
 	user, err := h.userService.GetById(ctx.Request.Context(), claims.UserID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

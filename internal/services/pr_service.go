@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"pr_review_api/internal/domain/entities"
 	customerrors "pr_review_api/internal/domain/errors"
 	"pr_review_api/internal/repository/interfaces"
@@ -28,7 +27,6 @@ func (s *PrService) Create(ctx context.Context, pullRequestId string, pullReques
 	}
 
 	teamMembers, err := s.UserRepository.GetUserTeam(ctx, author.TeamName)
-	fmt.Println(teamMembers)
 	if err != nil {
 		return nil, err
 	}
