@@ -425,6 +425,55 @@ X-Admin-Token: <admin_token>
 }
 ```
 
+## Additional Task
+
+### Get Pull Request Statistics
+
+Get statistics about the number of pull requests created by each user.
+
+**Endpoint**: `GET /api/v1/pullRequest/statistics`
+
+**Authentication**: Admin token (required)
+
+**Headers**:
+
+```
+X-Admin-Token: <admin_token>
+```
+
+**Example Request**:
+
+```bash
+curl -H "X-Admin-Token: admin-secret-token" \
+  "http://localhost:8080/api/v1/pullRequest/statistics"
+```
+
+**Response** (200 OK):
+
+```json
+{
+  "stats": [
+    {
+      "user_id": "u1",
+      "pull_request_number": 5
+    },
+    {
+      "user_id": "u2",
+      "pull_request_number": 3
+    },
+    {
+      "user_id": "u3",
+      "pull_request_number": 2
+    }
+  ]
+}
+```
+
+The response contains an array of statistics where each entry shows:
+
+- `user_id`: The ID of the user who created the pull requests
+- `pull_request_number`: The total number of pull requests created by that user
+
 ## Example Workflow
 
 Here's a complete example workflow using curl:

@@ -425,6 +425,55 @@ X-Admin-Token: <admin_token>
 }
 ```
 
+## Дополнительное задание
+
+### Получить статистику Pull Request'ов
+
+Получить статистику о количестве pull request'ов, созданных каждым пользователем.
+
+**Endpoint**: `GET /api/v1/pullRequest/statistics`
+
+**Аутентификация**: Админ токен (обязательно)
+
+**Заголовки**:
+
+```
+X-Admin-Token: <admin_token>
+```
+
+**Пример запроса**:
+
+```bash
+curl -H "X-Admin-Token: admin-secret-token" \
+  "http://localhost:8080/api/v1/pullRequest/statistics"
+```
+
+**Ответ** (200 OK):
+
+```json
+{
+  "stats": [
+    {
+      "user_id": "u1",
+      "pull_request_number": 5
+    },
+    {
+      "user_id": "u2",
+      "pull_request_number": 3
+    },
+    {
+      "user_id": "u3",
+      "pull_request_number": 2
+    }
+  ]
+}
+```
+
+Ответ содержит массив статистики, где каждая запись показывает:
+
+- `user_id`: ID пользователя, создавшего pull request'ы
+- `pull_request_number`: Общее количество pull request'ов, созданных этим пользователем
+
 ## Пример рабочего процесса
 
 Вот полный пример рабочего процесса с использованием curl:
