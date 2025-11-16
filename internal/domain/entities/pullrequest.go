@@ -12,13 +12,13 @@ const (
 )
 
 type PullRequest struct {
-	PullRequestId     string     `json:"pull_request_id"`
-	PullRequestName   string     `json:"pull_request_name"`
-	AuthorId          string     `json:"author_id"`
-	Status            Status     `json:"status"`
-	AssignedReviewers []string   `json:"assigned_reviewers"`
-	CreatedAt         *time.Time `json:"createdAt"`
-	MergedAt          *time.Time `json:"mergedAt"`
+	PullRequestId     string     `json:"pull_request_id" db:"pull_request_id"`
+	PullRequestName   string     `json:"pull_request_name" db:"pull_request_name"`
+	AuthorId          string     `json:"author_id" db:"author_id"`
+	Status            Status     `json:"status" db:"status"`
+	AssignedReviewers []string   `json:"assigned_reviewers" db:"assigned_reviewers"`
+	CreatedAt         *time.Time `json:"createdAt" db:"created_at"`
+	MergedAt          *time.Time `json:"mergedAt" db:"merged_at"`
 }
 
 type PullRequestJson struct {

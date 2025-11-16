@@ -11,6 +11,4 @@ type UserRepository interface {
 	SetIsActive(userId string, isActive bool) (*entities.User, error)
 	GetUserTeam(userId string) (*[]string, error)
 	GetById(userId string) (*entities.User, error)
-	// ExistsByEmail(ctx context.Context, email string) (bool, error)
-	// UpdateEmail(ctx context.Context, id uuid.UUID, email string) error
 }

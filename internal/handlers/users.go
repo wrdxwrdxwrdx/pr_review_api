@@ -18,31 +18,6 @@ func NewUserHandler(userService services.UserService) *UserHandler {
 	}
 }
 
-func (h *UserHandler) CreateUser(c *gin.Context) {
-	ctx := c.Request.Context()
-	var userJson entities.UserJson
-
-	if err := c.ShouldBindJSON(&userJson); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "Invalid JSON data",
-			"details": err.Error(),
-		})
-		return
-	}
-
-	user, err := h.userService.Create(ctx, userJson.Username, userJson.TeamName)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   "Failed to create user",
-			"details": err.Error(),
-		})
-		return
-	}
-
-	c.JSON(http.StatusCreated, user)
-}
-
 func (h *UserHandler) SetIsActive(c *gin.Context) {
 	ctx := c.Request.Context()
 	var userJson entities.UserIsActiveJson
@@ -66,4 +41,28 @@ func (h *UserHandler) SetIsActive(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, user)
+}
+
+func (h *UserHandler) GetReview(c *gin.Context) {
+	ctx := c.Request.Context()
+	userIdQuery := c.Query("UserIdQuery")
+
+	if userIdQuery == "" {
+		c.JSON(400, gin.H{
+			"error": "No teamNameQuery",
+		})
+		return
+	}
+
+	prs, err := h.userService.GetReview(ctx, userIdQuery)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Failed to create user",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, prs)
 }

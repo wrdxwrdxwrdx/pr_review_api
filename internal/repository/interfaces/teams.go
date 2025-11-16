@@ -9,9 +9,5 @@ import (
 type TeamRepository interface {
 	repository.Repository[entities.Team]
 
-	// TODO maybe not ID
 	GetByName(ctx context.Context, teamNameQuery string) (*entities.Team, error)
-	// GetByEmail(ctx context.Context, email string) (*entities.User, error)
-	// ExistsByEmail(ctx context.Context, email string) (bool, error)
-	// UpdateEmail(ctx context.Context, id uuid.UUID, email string) error
 }

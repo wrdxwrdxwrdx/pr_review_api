@@ -14,7 +14,7 @@ func main() {
 	prRepository := inmemory.NewPrRepository()
 
 	teamService := services.NewTeamService(teamRepository)
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(userRepository, prRepository)
 	prService := services.NewPrService(prRepository, userRepository)
 
 	userHandler := handlers.NewUserHandler(userService)
@@ -28,8 +28,8 @@ func main() {
 
 	api := router.Group("/api/v1")
 	{
-		api.POST("/users", userHandler.CreateUser)
 		api.POST("/users/setIsActive", userHandler.SetIsActive)
+		api.GET("/users/getReview", userHandler.GetReview)
 		api.POST("/team/add", teamHandler.CreateTeam)
 		api.POST("/pullRequest/create", prHandler.CreatePr)
 		api.POST("/pullRequest/merge", prHandler.MergePr)
