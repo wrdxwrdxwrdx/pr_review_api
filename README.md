@@ -18,13 +18,15 @@ A REST API service for managing pull request reviews, teams, and users. Built wi
    cd pr_review_api
    ```
 
-2. **Create environment file**:
+2. **Start the services** (optional: create `.env` file to override defaults):
 
    ```bash
+   # Optionally create .env file to customize settings
    cp .env.example .env
+   # Edit .env if needed
    ```
 
-   Edit `.env` and adjust the values as needed.
+   **Note**: The application will work with default values even without `.env` file. Create `.env` only if you need to customize the configuration.
 
 3. **Start the services**:
 

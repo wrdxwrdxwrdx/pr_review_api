@@ -2,26 +2,41 @@ services:
   db:
     image: postgres:16
     container_name: pr_review_db
-    env_file:
-      - .env
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-pr_review}
     volumes:
       - pr_review_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   app:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: pr_review_app
-    env_file:
-      - .env
+    environment:
+      DB_HOST: ${DB_HOST:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_NAME: ${DB_NAME:-pr_review}
+      DB_SSLMODE: ${DB_SSLMODE:-disable}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-admin-secret-token}
+      USER_TOKEN: ${USER_TOKEN:-user-secret-token}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-your-secret-key-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24}
+      JWT_ISSUER: ${JWT_ISSUER:-pr-reviewer-service}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${SERVER_PORT:-8080}:${SERVER_PORT:-8080}"
 
 volumes:
   pr_review_db_data:
