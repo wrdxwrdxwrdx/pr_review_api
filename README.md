@@ -55,15 +55,13 @@ A REST API service for managing pull request reviews, teams, and users. Built wi
 
 ## API Endpoints
 
-All endpoints are prefixed with `/api/v1`.
-
 ### Authentication Endpoints
 
 #### Register User
 
 Create a new user account and receive a JWT token.
 
-**Endpoint**: `POST /api/v1/auth/register`
+**Endpoint**: `POST /auth/register`
 
 **Authentication**: None (public)
 
@@ -90,7 +88,7 @@ Create a new user account and receive a JWT token.
 
 Authenticate an existing user and receive a JWT token.
 
-**Endpoint**: `POST /api/v1/auth/login`
+**Endpoint**: `POST /auth/login`
 
 **Authentication**: None (public)
 
@@ -119,7 +117,7 @@ Authenticate an existing user and receive a JWT token.
 
 Create a new team with members. This endpoint creates/updates users and assigns them to the team.
 
-**Endpoint**: `POST /api/v1/team/add`
+**Endpoint**: `POST /team/add`
 
 **Authentication**: JWT Bearer token (required)
 
@@ -175,7 +173,7 @@ Authorization: Bearer <jwt_token>
 
 Retrieve team information with all members.
 
-**Endpoint**: `GET /api/v1/team/get?TeamNameQuery=<team_name>`
+**Endpoint**: `GET /team/get?TeamNameQuery=<team_name>`
 
 **Authentication**: Admin token OR JWT Bearer token
 
@@ -199,7 +197,7 @@ Authorization: Bearer <jwt_token>
 
 ```bash
 curl -H "X-Admin-Token: admin-secret-token" \
-  "http://localhost:8080/api/v1/team/get?TeamNameQuery=backend"
+  "http://localhost:8080/team/get?TeamNameQuery=backend"
 ```
 
 **Response** (200 OK):
@@ -228,7 +226,7 @@ curl -H "X-Admin-Token: admin-secret-token" \
 
 Update a user's active status (admin only).
 
-**Endpoint**: `POST /api/v1/users/setIsActive`
+**Endpoint**: `POST /users/setIsActive`
 
 **Authentication**: Admin token (required)
 
@@ -264,7 +262,7 @@ X-Admin-Token: <admin_token>
 
 Get all pull requests where a user is assigned as a reviewer.
 
-**Endpoint**: `GET /api/v1/users/getReview?UserIdQuery=<user_id>`
+**Endpoint**: `GET /users/getReview?UserIdQuery=<user_id>`
 
 **Authentication**: Admin token OR JWT Bearer token
 
@@ -290,7 +288,7 @@ Authorization: Bearer <jwt_token>
 
 ```bash
 curl -H "Authorization: Bearer <jwt_token>" \
-  "http://localhost:8080/api/v1/users/getReview?UserIdQuery=u2"
+  "http://localhost:8080/users/getReview?UserIdQuery=u2"
 ```
 
 **Response** (200 OK):
@@ -315,7 +313,7 @@ curl -H "Authorization: Bearer <jwt_token>" \
 
 Create a new pull request and automatically assign up to 2 reviewers from the author's team.
 
-**Endpoint**: `POST /api/v1/pullRequest/create`
+**Endpoint**: `POST /pullRequest/create`
 
 **Authentication**: Admin token (required)
 
@@ -355,7 +353,7 @@ X-Admin-Token: <admin_token>
 
 Mark a pull request as merged (idempotent operation).
 
-**Endpoint**: `POST /api/v1/pullRequest/merge`
+**Endpoint**: `POST /pullRequest/merge`
 
 **Authentication**: Admin token (required)
 
@@ -393,7 +391,7 @@ X-Admin-Token: <admin_token>
 
 Replace a specific reviewer with another active user from the same team.
 
-**Endpoint**: `POST /api/v1/pullRequest/reassign`
+**Endpoint**: `POST /pullRequest/reassign`
 
 **Authentication**: Admin token (required)
 
@@ -435,7 +433,7 @@ X-Admin-Token: <admin_token>
 
 Get statistics about the number of pull requests created by each user.
 
-**Endpoint**: `GET /api/v1/pullRequest/statistics`
+**Endpoint**: `GET /pullRequest/statistics`
 
 **Authentication**: Admin token (required)
 
@@ -449,7 +447,7 @@ X-Admin-Token: <admin_token>
 
 ```bash
 curl -H "X-Admin-Token: admin-secret-token" \
-  "http://localhost:8080/api/v1/pullRequest/statistics"
+  "http://localhost:8080/pullRequest/statistics"
 ```
 
 **Response** (200 OK):
@@ -485,7 +483,7 @@ Here's a complete example workflow using curl:
 1. **Register a user**:
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/auth/register \
+   curl -X POST http://localhost:8080/auth/register \
      -H "Content-Type: application/json" \
      -d '{
        "user_id": "u1",
@@ -498,7 +496,7 @@ Here's a complete example workflow using curl:
 2. **Create a team** (using the JWT token from step 1):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/team/add \
+   curl -X POST http://localhost:8080/team/add \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer <token_from_step_1>" \
      -d '{
@@ -514,7 +512,7 @@ Here's a complete example workflow using curl:
 3. **Create a pull request** (using admin token):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/pullRequest/create \
+   curl -X POST http://localhost:8080/pullRequest/create \
      -H "Content-Type: application/json" \
      -H "X-Admin-Token: admin-secret-token" \
      -d '{
@@ -527,14 +525,14 @@ Here's a complete example workflow using curl:
 4. **Get user reviews** (using JWT token):
 
    ```bash
-   curl -X GET "http://localhost:8080/api/v1/users/getReview?UserIdQuery=u2" \
+   curl -X GET "http://localhost:8080/users/getReview?UserIdQuery=u2" \
      -H "Authorization: Bearer <token_from_step_1>"
    ```
 
 5. **Merge the pull request** (using admin token):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/pullRequest/merge \
+   curl -X POST http://localhost:8080/pullRequest/merge \
      -H "Content-Type: application/json" \
      -H "X-Admin-Token: admin-secret-token" \
      -d '{

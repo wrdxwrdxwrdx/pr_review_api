@@ -70,14 +70,14 @@ func main() {
 
 	router := gin.Default()
 
-	public := router.Group("/api/v1")
+	public := router.Group("")
 	{
 		public.POST("/auth/register", authHandler.Register)
 		public.POST("/auth/login", authHandler.Login)
 		public.GET("/health", healthHandler.Health)
 	}
 
-	adminOnly := router.Group("/api/v1")
+	adminOnly := router.Group("")
 	adminOnly.Use(adminMiddleware.AdminOnly())
 	{
 		adminOnly.POST("/users/setIsActive", userHandler.SetIsActive)
@@ -87,7 +87,7 @@ func main() {
 		adminOnly.GET("/pullRequest/statistics", prHandler.Statistics)
 	}
 
-	protected := router.Group("/api/v1")
+	protected := router.Group("")
 	protected.Use(adminMiddleware.AdminOrUser(authMiddleware))
 	{
 		protected.GET("/team/get", teamHandler.GetTeam)
@@ -95,7 +95,7 @@ func main() {
 		protected.GET("/auth/me", authHandler.Me)
 	}
 
-	teamCreate := router.Group("/api/v1")
+	teamCreate := router.Group("")
 	teamCreate.Use(authMiddleware.Authenticate())
 	{
 		teamCreate.POST("/team/add", teamHandler.CreateTeam)

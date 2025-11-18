@@ -51,15 +51,13 @@ REST API сервис для управления ревью pull request'ов, 
 
 ## API Endpoints
 
-Все endpoints имеют префикс `/api/v1`.
-
 ### Endpoints аутентификации
 
 #### Регистрация пользователя
 
 Создать новый аккаунт пользователя и получить JWT токен.
 
-**Endpoint**: `POST /api/v1/auth/register`
+**Endpoint**: `POST /auth/register`
 
 **Аутентификация**: Не требуется (публичный)
 
@@ -86,7 +84,7 @@ REST API сервис для управления ревью pull request'ов, 
 
 Аутентифицировать существующего пользователя и получить JWT токен.
 
-**Endpoint**: `POST /api/v1/auth/login`
+**Endpoint**: `POST /auth/login`
 
 **Аутентификация**: Не требуется (публичный)
 
@@ -115,7 +113,7 @@ REST API сервис для управления ревью pull request'ов, 
 
 Создать новую команду с участниками. Этот endpoint создает/обновляет пользователей и назначает их в команду.
 
-**Endpoint**: `POST /api/v1/team/add`
+**Endpoint**: `POST /team/add`
 
 **Аутентификация**: JWT Bearer токен (обязательно)
 
@@ -171,7 +169,7 @@ Authorization: Bearer <jwt_token>
 
 Получить информацию о команде со всеми участниками.
 
-**Endpoint**: `GET /api/v1/team/get?TeamNameQuery=<team_name>`
+**Endpoint**: `GET /team/get?TeamNameQuery=<team_name>`
 
 **Аутентификация**: Админ токен ИЛИ JWT Bearer токен
 
@@ -195,7 +193,7 @@ Authorization: Bearer <jwt_token>
 
 ```bash
 curl -H "X-Admin-Token: admin-secret-token" \
-  "http://localhost:8080/api/v1/team/get?TeamNameQuery=backend"
+  "http://localhost:8080/team/get?TeamNameQuery=backend"
 ```
 
 **Ответ** (200 OK):
@@ -224,7 +222,7 @@ curl -H "X-Admin-Token: admin-secret-token" \
 
 Обновить статус активности пользователя (только для админа).
 
-**Endpoint**: `POST /api/v1/users/setIsActive`
+**Endpoint**: `POST /users/setIsActive`
 
 **Аутентификация**: Админ токен (обязательно)
 
@@ -260,7 +258,7 @@ X-Admin-Token: <admin_token>
 
 Получить все pull request'ы, где пользователь назначен ревьювером.
 
-**Endpoint**: `GET /api/v1/users/getReview?UserIdQuery=<user_id>`
+**Endpoint**: `GET /users/getReview?UserIdQuery=<user_id>`
 
 **Аутентификация**: Админ токен ИЛИ JWT Bearer токен
 
@@ -286,7 +284,7 @@ Authorization: Bearer <jwt_token>
 
 ```bash
 curl -H "Authorization: Bearer <jwt_token>" \
-  "http://localhost:8080/api/v1/users/getReview?UserIdQuery=u2"
+  "http://localhost:8080/users/getReview?UserIdQuery=u2"
 ```
 
 **Ответ** (200 OK):
@@ -311,7 +309,7 @@ curl -H "Authorization: Bearer <jwt_token>" \
 
 Создать новый pull request и автоматически назначить до 2 ревьюверов из команды автора.
 
-**Endpoint**: `POST /api/v1/pullRequest/create`
+**Endpoint**: `POST /pullRequest/create`
 
 **Аутентификация**: Админ токен (обязательно)
 
@@ -351,7 +349,7 @@ X-Admin-Token: <admin_token>
 
 Пометить pull request как смерженный (идемпотентная операция).
 
-**Endpoint**: `POST /api/v1/pullRequest/merge`
+**Endpoint**: `POST /pullRequest/merge`
 
 **Аутентификация**: Админ токен (обязательно)
 
@@ -389,7 +387,7 @@ X-Admin-Token: <admin_token>
 
 Заменить конкретного ревьювера на другого активного пользователя из той же команды.
 
-**Endpoint**: `POST /api/v1/pullRequest/reassign`
+**Endpoint**: `POST /pullRequest/reassign`
 
 **Аутентификация**: Админ токен (обязательно)
 
@@ -431,7 +429,7 @@ X-Admin-Token: <admin_token>
 
 Получить статистику о количестве pull request'ов, созданных каждым пользователем.
 
-**Endpoint**: `GET /api/v1/pullRequest/statistics`
+**Endpoint**: `GET /pullRequest/statistics`
 
 **Аутентификация**: Админ токен (обязательно)
 
@@ -445,7 +443,7 @@ X-Admin-Token: <admin_token>
 
 ```bash
 curl -H "X-Admin-Token: admin-secret-token" \
-  "http://localhost:8080/api/v1/pullRequest/statistics"
+  "http://localhost:8080/pullRequest/statistics"
 ```
 
 **Ответ** (200 OK):
@@ -481,7 +479,7 @@ curl -H "X-Admin-Token: admin-secret-token" \
 1. **Зарегистрировать пользователя**:
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/auth/register \
+   curl -X POST http://localhost:8080/auth/register \
      -H "Content-Type: application/json" \
      -d '{
        "user_id": "u1",
@@ -494,7 +492,7 @@ curl -H "X-Admin-Token: admin-secret-token" \
 2. **Создать команду** (используя JWT токен из шага 1):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/team/add \
+   curl -X POST http://localhost:8080/team/add \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer <token_from_step_1>" \
      -d '{
@@ -510,7 +508,7 @@ curl -H "X-Admin-Token: admin-secret-token" \
 3. **Создать pull request** (используя админ токен):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/pullRequest/create \
+   curl -X POST http://localhost:8080/pullRequest/create \
      -H "Content-Type: application/json" \
      -H "X-Admin-Token: admin-secret-token" \
      -d '{
@@ -523,14 +521,14 @@ curl -H "X-Admin-Token: admin-secret-token" \
 4. **Получить ревью пользователя** (используя JWT токен):
 
    ```bash
-   curl -X GET "http://localhost:8080/api/v1/users/getReview?UserIdQuery=u2" \
+   curl -X GET "http://localhost:8080/users/getReview?UserIdQuery=u2" \
      -H "Authorization: Bearer <token_from_step_1>"
    ```
 
 5. **Смержить pull request** (используя админ токен):
 
    ```bash
-   curl -X POST http://localhost:8080/api/v1/pullRequest/merge \
+   curl -X POST http://localhost:8080/pullRequest/merge \
      -H "Content-Type: application/json" \
      -H "X-Admin-Token: admin-secret-token" \
      -d '{
